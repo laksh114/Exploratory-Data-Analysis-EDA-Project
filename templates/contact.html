@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us – InsightX EDA Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="glass-card p-5">
+                <h1 class="text-white fw-bold mb-3" style="font-family: 'Outfit', sans-serif;"><i class="fas fa-envelope text-info me-2"></i> Get in Touch</h1>
+                <p class="text-secondary lead">Have questions, feedback, or need help with custom deployments? Drop a message.</p>
+                
+                <form method="POST" action="{{ url_for('contact') }}" class="mt-4">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label text-white small">Your Name</label>
+                            <input type="text" class="form-control glass-input" id="name" name="name" required placeholder="Enter your name">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label text-white small">Email Address</label>
+                            <input type="email" class="form-control glass-input" id="email" name="email" required placeholder="yourname@domain.com">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="message" class="form-label text-white small">Message</label>
+                        <textarea class="form-control glass-input" id="message" name="message" rows="5" required placeholder="Type your message details here..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-premium w-100 py-3"><i class="fas fa-paper-plane me-2"></i> Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Environments
+venv/
+ENV/
+env/
+.env
+
+# SQLite databases
+*.db
+*.sqlite
+
+# Application directories
+uploads/*
+reports/*
+exports/*
+!uploads/.gitkeep
+!reports/.gitkeep
+!exports/.gitkeep
+
+# IDEs
+.vscode/
+.idea/

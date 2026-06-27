@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Insights & Reports – {{ dataset.original_name }} – InsightX{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <!-- Sidebar Navigation -->
+    <div class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-chart-bar me-2"></i>
+            <span>InsightX Workspace</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{{ url_for('dashboard_detail', dataset_id=dataset.id) }}" class="sidebar-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Overview Cockpit</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('cleaning_page', dataset_id=dataset.id) }}" class="sidebar-link">
+                    <i class="fas fa-broom"></i>
+                    <span>Data Cleaning</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('charts_page', dataset_id=dataset.id) }}" class="sidebar-link">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Visualizations</span>
+                </a>
+            </li>
+            <li class="sidebar-item active">
+                <a href="{{ url_for('reports_page', dataset_id=dataset.id) }}" class="sidebar-link">
+                    <i class="fas fa-file-invoice"></i>
+                    <span>Insights & Reports</span>
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="{{ url_for('upload_page') }}" class="btn btn-sm btn-premium w-100"><i class="fas fa-exchange-alt me-1"></i> Switch Dataset</a>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Content Panel -->
+    <div class="dashboard-content">
+        <div class="mb-4">
+            <h1 class="text-white fw-bold mb-1"><i class="fas fa-file-invoice text-success me-2"></i> Insights & Reports Cockpit</h1>
+            <p class="text-secondary">Read automatically compiled analysis findings and download styled reports.</p>
+        </div>
+
+        <!-- Export Actions Grid -->
+        <h4 class="text-white fw-bold mb-3"><i class="fas fa-file-download text-info me-2"></i> Export Report Formats</h4>
+        <div class="row g-3 mb-5">
+            <!-- PDF Export Card -->
+            <div class="col-md-3">
+                <div class="glass-card text-center p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="far fa-file-pdf text-danger display-4 mb-3"></i>
+                        <h5 class="text-white fw-bold">PDF Document</h5>
+                        <p class="text-secondary small">Comprehensive audit report featuring cover pages, metrics, static charts, and bullet summaries.</p>
+                    </div>
+                    <a href="{{ url_for('export_report', dataset_id=dataset.id, report_type='pdf') }}" class="btn btn-premium w-100 mt-3"><i class="fas fa-download me-1"></i> Download PDF</a>
+                </div>
+            </div>
+            
+            <!-- Excel Export Card -->
+            <div class="col-md-3">
+                <div class="glass-card text-center p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="far fa-file-excel text-success display-4 mb-3"></i>
+                        <h5 class="text-white fw-bold">Excel Workbook</h5>
+                        <p class="text-secondary small">Multi-sheet Excel sheets containing raw dataset, descriptive statistics, and correlation heatmaps.</p>
+                    </div>
+                    <a href="{{ url_for('export_report', dataset_id=dataset.id, report_type='excel') }}" class="btn btn-premium w-100 mt-3"><i class="fas fa-download me-1"></i> Download Excel</a>
+                </div>
+            </div>
+
+            <!-- PPTX Export Card -->
+            <div class="col-md-3">
+                <div class="glass-card text-center p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="far fa-file-powerpoint text-warning display-4 mb-3"></i>
+                        <h5 class="text-white fw-bold">PowerPoint Deck</h5>
+                        <p class="text-secondary small">Presentation slide deck suitable for reviews and college showcases. Key KPIs and bullet insights.</p>
+                    </div>
+                    <a href="{{ url_for('export_report', dataset_id=dataset.id, report_type='pptx') }}" class="btn btn-premium w-100 mt-3"><i class="fas fa-download me-1"></i> Download Slides</a>
+                </div>
+            </div>
+
+            <!-- Clean Dataset CSV Export Card -->
+            <div class="col-md-3">
+                <div class="glass-card text-center p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-file-csv text-info display-4 mb-3"></i>
+                        <h5 class="text-white fw-bold">Clean Dataset</h5>
+                        <p class="text-secondary small">Download your fully cleaned and formatted CSV dataset directly to disk for downstream use.</p>
+                    </div>
+                    <a href="{{ url_for('export_dataset', dataset_id=dataset.id) }}" class="btn btn-premium w-100 mt-3"><i class="fas fa-download me-1"></i> Download CSV</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left Side: Automatic Insights Engine -->
+            <div class="col-lg-8">
+                <div class="glass-card">
+                    <h4 class="text-white fw-bold mb-4"><i class="fas fa-brain text-info me-2"></i> Automated Business Insights</h4>
+                    
+                    <div class="d-flex flex-column gap-3">
+                        {% for ins in insights %}
+                            <div class="p-3 rounded border border-secondary bg-dark-subtle d-flex align-items-start">
+                                <span class="badge 
+                                    {% if ins.category == 'Overview' %}bg-info
+                                    {% elif ins.category == 'Data Quality' %}bg-danger
+                                    {% elif ins.category == 'Correlations' %}bg-primary
+                                    {% else %}bg-success{% endif %} me-3 mt-1">
+                                    {{ ins.category }}
+                                </span>
+                                <div class="text-white fs-6">
+                                    {{ ins.text|safe }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Top recommendations -->
+            <div class="col-lg-4">
+                <div class="glass-card">
+                    <h4 class="text-white fw-bold mb-3"><i class="fas fa-clipboard-check text-warning me-2"></i> Action Items</h4>
+                    <p class="text-secondary small">Suggested data-cleaning tasks based on audited metrics:</p>
+                    
+                    <ul class="list-group list-group-flush bg-transparent">
+                        <li class="list-group-item bg-transparent text-secondary border-secondary px-0">
+                            <i class="fas fa-check-square text-info me-2"></i> <strong>Fill Null Values:</strong> Impute critical numeric empty fields using column mean/median.
+                        </li>
+                        <li class="list-group-item bg-transparent text-secondary border-secondary px-0">
+                            <i class="fas fa-check-square text-info me-2"></i> <strong>Remove Duplicates:</strong> Drop identical records to prevent model learning bias.
+                        </li>
+                        <li class="list-group-item bg-transparent text-secondary border-secondary px-0">
+                            <i class="fas fa-check-square text-info me-2"></i> <strong>Trim Outliers:</strong> Cap high-variance metrics like Fare/Sales.
+                        </li>
+                        <li class="list-group-item bg-transparent text-secondary border-secondary px-0">
+                            <i class="fas fa-check-square text-info me-2"></i> <strong>Multicollinearity:</strong> Review highly correlated column pairs to simplify features.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        initDashboard({{ dataset.id }});
+    });
+</script>
+{% endblock %}

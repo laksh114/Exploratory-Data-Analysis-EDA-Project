@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Register – InsightX EDA Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="glass-card mt-4 p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-user-plus text-info fs-1 mb-3"></i>
+                    <h2 class="text-white fw-bold">Create Account</h2>
+                    <p class="text-secondary">Register to start analyzing datasets</p>
+                </div>
+                
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label text-white small">Username</label>
+                        <input type="text" class="form-control glass-input" id="username" name="username" required placeholder="Choose a unique username">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label text-white small">Email Address</label>
+                        <input type="email" class="form-control glass-input" id="email" name="email" required placeholder="yourname@domain.com">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="password" class="form-label text-white small">Password</label>
+                        <input type="password" class="form-control glass-input" id="password" name="password" required placeholder="Create a strong password">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-premium w-100 py-3 mb-3">Register</button>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <span class="text-secondary small">Already have an account? <a href="{{ url_for('login') }}" class="text-info">Login here</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

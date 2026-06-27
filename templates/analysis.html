@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}Data Audit & Cleaning – {{ dataset.original_name }} – InsightX{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <!-- Sidebar Navigation -->
+    <div class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-chart-bar me-2"></i>
+            <span>InsightX Workspace</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{{ url_for('dashboard_detail', dataset_id=dataset.id) }}" class="sidebar-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Overview Cockpit</span>
+                </a>
+            </li>
+            <li class="sidebar-item active">
+                <a href="{{ url_for('cleaning_page', dataset_id=dataset.id) }}" class="sidebar-link">
+                    <i class="fas fa-broom"></i>
+                    <span>Data Cleaning</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('charts_page', dataset_id=dataset.id) }}" class="sidebar-link">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Visualizations</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('reports_page', dataset_id=dataset.id) }}" class="sidebar-link">
+                    <i class="fas fa-file-invoice"></i>
+                    <span>Insights & Reports</span>
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="{{ url_for('upload_page') }}" class="btn btn-sm btn-premium w-100"><i class="fas fa-exchange-alt me-1"></i> Switch Dataset</a>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Content Panel -->
+    <div class="dashboard-content">
+        <div class="mb-4">
+            <h1 class="text-white fw-bold mb-1"><i class="fas fa-broom text-warning me-2"></i> Data Cleaning & Explorer</h1>
+            <p class="text-secondary">Run missing value imputations, drop anomalies, cast data types, and inspect row details.</p>
+        </div>
+
+        <!-- Cleaning Toolbox cards -->
+        <div class="row g-4 mb-4">
+            <!-- 1. Imputations -->
+            <div class="col-md-6">
+                <div class="glass-card h-100">
+                    <h5 class="text-white fw-bold mb-3"><i class="fas fa-magic text-info me-2"></i> Missing Value Imputer</h5>
+                    <form id="impute-form">
+                        <div class="row g-2">
+                            <div class="col-md-6 mb-2">
+                                <label class="text-secondary small">Target Column</label>
+                                <select class="form-select glass-input text-white w-100" id="impute-column" required style="background-color: var(--bg-primary);">
+                                    {% for col in columns_info %}
+                                        <option value="{{ col.name }}">{{ col.name }} ({{ col.null_count }} null)</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label class="text-secondary small">Imputation Strategy</label>
+                                <select class="form-select glass-input text-white w-100" id="impute-strategy" required style="background-color: var(--bg-primary);">
+                                    <option value="mean">Mean (numeric only)</option>
+                                    <option value="median">Median (numeric only)</option>
+                                    <option value="mode">Most Frequent (Mode)</option>
+                                    <option value="constant">Constant Value</option>
+                                    <option value="ffill">Forward Fill</option>
+                                    <option value="bfill">Backward Fill</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3 d-none" id="impute-value-group">
+                                <label class="text-secondary small">Constant Value</label>
+                                <input type="text" class="form-control glass-input" id="impute-value" placeholder="Enter custom value">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-premium w-100 py-2"><i class="fas fa-check-circle me-1"></i> Impute Missing Values</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 2. Schema changes & outlier triggers -->
+            <div class="col-md-6">
+                <div class="glass-card h-100">
+                    <h5 class="text-white fw-bold mb-3"><i class="fas fa-cogs text-info me-2"></i> Format Casting & Outliers</h5>
+                    
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <form id="type-convert-form">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-5">
+                                        <label class="text-secondary small">Column</label>
+                                        <select class="form-select glass-input text-white w-100" id="convert-column" required style="background-color: var(--bg-primary);">
+                                            {% for col in columns_info %}
+                                                <option value="{{ col.name }}">{{ col.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="text-secondary small">Cast To</label>
+                                        <select class="form-select glass-input text-white w-100" id="convert-type" required style="background-color: var(--bg-primary);">
+                                            <option value="int">Integer</option>
+                                            <option value="float">Float</option>
+                                            <option value="str">String/Object</option>
+                                            <option value="category">Categorical</option>
+                                            <option value="datetime">Datetime</option>
+                                            <option value="bool">Boolean</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="submit" class="btn btn-glass-secondary w-100 py-2">Cast</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="col-12">
+                            <form id="outlier-form">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-5">
+                                        <label class="text-secondary small">Numeric Column</label>
+                                        <select class="form-select glass-input text-white w-100" id="outlier-column" required style="background-color: var(--bg-primary);">
+                                            {% for col in columns_info %}
+                                                {% if col.type == 'numeric' %}
+                                                    <option value="{{ col.name }}">{{ col.name }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="text-secondary small">Outlier Strategy</label>
+                                        <select class="form-select glass-input text-white w-100" id="outlier-strategy" required style="background-color: var(--bg-primary);">
+                                            <option value="clip">Cap/Clip (IQR Bounds)</option>
+                                            <option value="drop">Drop Outlier Rows</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="submit" class="btn btn-glass-secondary w-100 py-2">Prune</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Duplicate Rows Trigger -->
+                        <div class="col-12 mt-2">
+                            <button type="button" class="btn btn-danger w-100 py-2" id="btn-remove-duplicates">
+                                <i class="fas fa-copy me-1"></i> Remove All Duplicate Rows ({{ dataset.duplicated_rows_count or 0 }} rows)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Descriptive stats panel -->
+        <div class="glass-card mb-4">
+            <h4 class="text-white fw-bold mb-3"><i class="fas fa-calculator text-info me-2"></i> Descriptive Statistics Summary</h4>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover border-secondary" style="font-size: 0.85rem;">
+                    <thead>
+                        <tr class="text-info">
+                            <th>Feature Name</th>
+                            <th>Count</th>
+                            <th>Mean</th>
+                            <th>Std Dev</th>
+                            <th>Min</th>
+                            <th>25% (Q1)</th>
+                            <th>Median (Q2)</th>
+                            <th>75% (Q3)</th>
+                            <th>Max</th>
+                            <th>Skewness</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for col, meta in stats_summary.items() %}
+                            <tr>
+                                <td class="fw-bold text-white">{{ col }}</td>
+                                <td>{{ meta.count }}</td>
+                                {% if meta.type == 'numeric' %}
+                                    <td>{{ meta.mean|round(4) }}</td>
+                                    <td>{{ meta.std|round(4) }}</td>
+                                    <td>{{ meta.min|round(2) }}</td>
+                                    <td>{{ meta.q1|round(2) }}</td>
+                                    <td>{{ meta.median|round(2) }}</td>
+                                    <td>{{ meta.q3|round(2) }}</td>
+                                    <td>{{ meta.max|round(2) }}</td>
+                                    <td>{{ meta.skewness|round(3) }}</td>
+                                {% else %}
+                                    <td colspan="8" class="text-muted text-center italic">Categorical / Object column values</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Interactive Search, Sort, Filter Table -->
+        <div class="glass-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="text-white fw-bold mb-0"><i class="fas fa-eye text-info me-2"></i> Row-Level Data Explorer</h4>
+                
+                <div class="d-flex gap-2">
+                    <form method="GET" action="{{ url_for('cleaning_page', dataset_id=dataset.id) }}" class="d-flex gap-2">
+                        <input type="text" name="search" class="form-control glass-input py-1 px-3 text-white" placeholder="Search rows..." value="{{ search_query }}">
+                        <button type="submit" class="btn btn-sm btn-glass-secondary"><i class="fas fa-search"></i></button>
+                    </form>
+                    
+                    <a href="{{ url_for('export_dataset', dataset_id=dataset.id) }}" class="btn btn-sm btn-premium"><i class="fas fa-download me-1"></i> Export CSV</a>
+                </div>
+            </div>
+
+            <!-- Scrollable table -->
+            <div class="table-responsive border border-secondary rounded">
+                <table class="table table-dark table-hover table-striped mb-0" style="font-size: 0.85rem;">
+                    <thead>
+                        <tr>
+                            {% for col in df_headers %}
+                                <th>{{ col }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in df_rows %}
+                            <tr>
+                                {% for cell in row %}
+                                    <td>{{ cell }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination Controls -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <span class="text-secondary small">Showing page {{ page }} of {{ total_pages }} (Total: {{ dataset.row_count }} rows)</span>
+                
+                <nav>
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+                            <a class="page-link bg-dark border-secondary text-white" href="{{ url_for('cleaning_page', dataset_id=dataset.id, page=page-1, search=search_query) }}">Previous</a>
+                        </li>
+                        <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+                            <a class="page-link bg-dark border-secondary text-white" href="{{ url_for('cleaning_page', dataset_id=dataset.id, page=page+1, search=search_query) }}">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        initDashboard({{ dataset.id }});
+    });
+</script>
+{% endblock %}

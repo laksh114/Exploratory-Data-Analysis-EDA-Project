@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}About – InsightX EDA Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-start">
+    <div class="row justify-content-center">
+        <div class="col-md-9">
+            <div class="glass-card p-5 mb-5">
+                <h1 class="text-white display-5 fw-bold mb-4" style="font-family: 'Outfit', sans-serif;"><i class="fas fa-info-circle text-info me-2"></i> About InsightX</h1>
+                <p class="text-secondary lead fs-5">
+                    InsightX is a premium industry-grade Exploratory Data Analysis (EDA) platform designed to let analysts, students, and engineers audit, clean, visualize, and generate reports on complex datasets instantly.
+                </p>
+                <hr class="border-secondary my-4">
+                
+                <h3 class="text-white fw-bold mb-3">Architectural Philosophy</h3>
+                <p class="text-secondary">
+                    The platform is built around a decoupled modular architecture. The Flask core serves as the REST backend orchestrating datasets, users, and reports inside SQLite. 
+                    Data parsing and analytics modules leverage standard scientific computing packages (Pandas, NumPy, SciPy, Scikit-learn), whereas visualizations are rendered dynamically on the frontend via Plotly.js.
+                </p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-dark border border-secondary rounded">
+                            <h5 class="text-white fw-bold"><i class="fas fa-microchip text-primary me-2"></i> Core Backend Stack</h5>
+                            <ul class="text-muted small ps-3 mb-0">
+                                <li>Python 3 & Flask web routing</li>
+                                <li>SQLite database with Flask-SQLAlchemy</li>
+                                <li>Pandas & NumPy for cell transformations</li>
+                                <li>SciPy for skewness/kurtosis modeling</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-dark border border-secondary rounded">
+                            <h5 class="text-white fw-bold"><i class="fas fa-desktop text-success me-2"></i> User Interface Stack</h5>
+                            <ul class="text-muted small ps-3 mb-0">
+                                <li>HTML5 & CSS3 custom glassmorphic variables</li>
+                                <li>Bootstrap 5 grids & responsive containers</li>
+                                <li>Plotly.js for interactive dashboard widgets</li>
+                                <li>FontAwesome icons & Google typography</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Features List -->
+            <div class="glass-card p-5">
+                <h3 class="text-white fw-bold mb-4"><i class="fas fa-check-circle text-success me-2"></i> Project Feature Compliance</h3>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start text-secondary">
+                            <i class="fas fa-check text-info me-2 mt-1"></i>
+                            <div>
+                                <strong class="text-white">Authentication System</strong>
+                                <p class="small">Secure login/registration utilizing Werkzeug password salting/hashing.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start text-secondary">
+                            <i class="fas fa-check text-info me-2 mt-1"></i>
+                            <div>
+                                <strong class="text-white">Imputation Toolbox</strong>
+                                <p class="small">Impute null variables, cap outliers, and prune duplicates via AJAX actions.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start text-secondary">
+                            <i class="fas fa-check text-info me-2 mt-1"></i>
+                            <div>
+                                <strong class="text-white">Report Generation Engine</strong>
+                                <p class="small">Generate PDF booklets, openpyxl sheets, and PowerPoint slide files on command.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start text-secondary">
+                            <i class="fas fa-check text-info me-2 mt-1"></i>
+                            <div>
+                                <strong class="text-white">Natural Language Query (NLQ)</strong>
+                                <p class="small">Ask questions in English. The engine securely parses and calculates answers.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

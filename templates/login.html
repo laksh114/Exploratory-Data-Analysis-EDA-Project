@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Login – InsightX EDA Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="glass-card mt-5 p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-lock text-info fs-1 mb-3"></i>
+                    <h2 class="text-white fw-bold">Welcome Back</h2>
+                    <p class="text-secondary">Sign in to your InsightX workspace</p>
+                </div>
+                
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label text-white small">Username or Email</label>
+                        <input type="text" class="form-control glass-input" id="username" name="username" required placeholder="Enter username or email">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="password" class="form-label text-white small">Password</label>
+                        <input type="password" class="form-control glass-input" id="password" name="password" required placeholder="••••••••">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-premium w-100 py-3 mb-3">Sign In</button>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <span class="text-secondary small">Don't have an account? <a href="{{ url_for('register') }}" class="text-info">Register here</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

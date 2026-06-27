@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}InsightX – AI-Powered Exploratory Data Analysis Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    
+    <!-- Hero Section -->
+    <div class="row align-items-center py-5">
+        <div class="col-lg-6 text-start">
+            <h1 class="display-3 fw-extrabold mb-3 text-white" style="font-family: 'Outfit', sans-serif; line-height: 1.15;">
+                Understand Your Data <br/>
+                <span class="text-info" style="background: linear-gradient(135deg, #6366f1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Without Writing Code</span>
+            </h1>
+            <p class="lead text-secondary mb-4 fs-4" style="font-weight: 300;">
+                Upload your datasets, clean them, build gorgeous interactive charts, calculate correlation, generate business insights, and download report summaries instantly.
+            </p>
+            <div class="d-flex gap-3">
+                <a href="{{ url_for('upload_page') }}" class="btn btn-premium btn-lg px-4 fs-5"><i class="fas fa-rocket me-2"></i> Start Analyzing</a>
+                <a href="#features" class="btn btn-glass-secondary btn-lg px-4 fs-5"><i class="fas fa-lightbulb me-2"></i> Explore Features</a>
+            </div>
+        </div>
+        <div class="col-lg-6 mt-5 mt-lg-0 text-center">
+            <!-- Glassmorphic Dashboard Preview Mockup -->
+            <div class="glass-card p-4 mx-auto" style="max-width: 520px; border-color: rgba(255,255,255,0.12); transform: rotate(1deg);">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex gap-2">
+                        <span class="badge bg-danger rounded-circle p-1" style="width: 10px; height: 10px;"></span>
+                        <span class="badge bg-warning rounded-circle p-1" style="width: 10px; height: 10px;"></span>
+                        <span class="badge bg-success rounded-circle p-1" style="width: 10px; height: 10px;"></span>
+                    </div>
+                    <span class="text-muted small">InsightX Interactive Workspace</span>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-4">
+                        <div class="p-3 rounded bg-dark border border-secondary text-center">
+                            <h5 class="text-white mb-1">1,024</h5>
+                            <small class="text-muted" style="font-size: 0.7rem;">ROWS</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 rounded bg-dark border border-secondary text-center">
+                            <h5 class="text-white mb-1">12</h5>
+                            <small class="text-muted" style="font-size: 0.7rem;">COLUMNS</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 rounded bg-dark border border-secondary text-center">
+                            <h5 class="text-danger mb-1">14%</h5>
+                            <small class="text-muted" style="font-size: 0.7rem;">NULL CELLS</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="p-3 rounded bg-dark border border-secondary text-start">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span class="text-white fw-bold small">Auto-Detected Issues</span>
+                            </div>
+                            <ul class="mb-0 text-muted small ps-3">
+                                <li>Titanic Age contains 177 null values.</li>
+                                <li>Pearson Correlation: Fare & Class = -0.549</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <hr class="border-secondary my-5">
+    
+    <!-- Supported Formats Section -->
+    <div class="row text-center py-4">
+        <h3 class="fw-bold mb-4 text-white">Supported Formats</h3>
+        <div class="col-md-4 offset-md-2">
+            <div class="glass-card py-4">
+                <i class="fas fa-file-csv text-info fs-1 mb-3"></i>
+                <h5 class="text-white">Comma Separated Values</h5>
+                <code class="text-muted">.csv</code>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card py-4">
+                <i class="fas fa-file-excel text-success fs-1 mb-3"></i>
+                <h5 class="text-white">Microsoft Excel</h5>
+                <code class="text-muted">.xlsx / .xls</code>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Features Grid -->
+    <div id="features" class="row py-5">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-5 fw-bold text-white">Advanced Features</h2>
+            <p class="text-secondary lead">Built on professional data science libraries to deliver clean analysis.</p>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="glass-card h-100">
+                <i class="fas fa-broom text-warning fs-3 mb-3"></i>
+                <h4 class="text-white mb-2">Data Cleaning & Profiling</h4>
+                <p class="text-secondary">Detect missing values, duplicate rows, and outliers using IQR. Perform column-level conversions, ffill/bfill, and median imputations.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="glass-card h-100">
+                <i class="fas fa-chart-line text-info fs-3 mb-3"></i>
+                <h4 class="text-white mb-2">Interactive Visualizations</h4>
+                <p class="text-secondary">Explore columns with dynamic Plotly histograms, bar charts, box plots, violin diagrams, and interactive correlation heatmaps.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="glass-card h-100">
+                <i class="fas fa-bolt text-danger fs-3 mb-3"></i>
+                <h4 class="text-white mb-2">AI-Powered Insights</h4>
+                <p class="text-secondary">Get automatic rule-based business insights and query datasets directly in plain English with our natural language query engine.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Timeline Section -->
+    <div class="row py-5 text-center">
+        <h3 class="fw-bold mb-5 text-white">Analysis Workflow Timeline</h3>
+        <div class="col-md-3">
+            <div class="p-3">
+                <div class="btn btn-premium rounded-circle p-0 mb-3" style="width: 50px; height: 50px; line-height: 50px; font-size: 1.2rem; font-weight: bold;">1</div>
+                <h5 class="text-white">Upload</h5>
+                <p class="text-muted small">Import Excel/CSV dataset securely.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3">
+                <div class="btn btn-premium rounded-circle p-0 mb-3" style="width: 50px; height: 50px; line-height: 50px; font-size: 1.2rem; font-weight: bold;">2</div>
+                <h5 class="text-white">Audit & Clean</h5>
+                <p class="text-muted small">Solve missing values, duplicates & outliers.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3">
+                <div class="btn btn-premium rounded-circle p-0 mb-3" style="width: 50px; height: 50px; line-height: 50px; font-size: 1.2rem; font-weight: bold;">3</div>
+                <h5 class="text-white">Explore</h5>
+                <p class="text-muted small">View correlations, statistics & charts.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3">
+                <div class="btn btn-premium rounded-circle p-0 mb-3" style="width: 50px; height: 50px; line-height: 50px; font-size: 1.2rem; font-weight: bold;">4</div>
+                <h5 class="text-white">Export Report</h5>
+                <p class="text-muted small">Download PDF, Excel, or PPTX reports.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Developer Information Footer -->
+    <div class="row py-5 text-center">
+        <div class="col-lg-8 mx-auto glass-card">
+            <h4 class="text-white mb-3">About the Developer</h4>
+            <p class="text-secondary">
+                Designed & developed as a full stack showcases workspace project. InsightX provides state of the art tools to process complex datasets, empowering analysts to extract insights dynamically.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="https://github.com" class="text-info me-3"><i class="fab fa-github fs-4"></i> GitHub</a>
+                <a href="https://linkedin.com" class="text-info"><i class="fab fa-linkedin fs-4"></i> LinkedIn</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

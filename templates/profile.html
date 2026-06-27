@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Profile Settings – InsightX EDA Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar/Settings links -->
+        <div class="col-md-4 mb-4">
+            <div class="glass-card text-center p-4">
+                <div class="avatar-wrapper mb-3">
+                    <i class="fas fa-user-circle text-info display-1"></i>
+                </div>
+                <h4 class="text-white fw-bold mb-1">{{ current_user.username }}</h4>
+                <p class="text-secondary small">{{ current_user.email }}</p>
+                <hr class="border-secondary">
+                <div class="text-start">
+                    <p class="text-secondary mb-2"><i class="fas fa-calendar-alt me-2 text-info"></i> Member since: {{ current_user.created_at.strftime('%Y-%m-%d') }}</p>
+                    <p class="text-secondary"><i class="fas fa-database me-2 text-info"></i> Datasets uploaded: {{ current_user.datasets|length }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Form updates panel -->
+        <div class="col-md-8">
+            <div class="glass-card p-5 mb-4">
+                <h3 class="text-white fw-bold mb-4">Profile Settings</h3>
+                <form method="POST" action="{{ url_for('profile_page') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label text-white small">Username</label>
+                            <input type="text" class="form-control glass-input" id="username" name="username" value="{{ current_user.username }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label text-white small">Email Address</label>
+                            <input type="email" class="form-control glass-input" id="email" name="email" value="{{ current_user.email }}" required>
+                        </div>
+                    </div>
+                    
+                    <hr class="border-secondary my-4">
+                    
+                    <h5 class="text-white mb-3">Change Password</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="new_password" class="form-label text-white small">New Password (leave blank to keep current)</label>
+                            <input type="password" class="form-control glass-input" id="new_password" name="new_password" placeholder="••••••••">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-premium mt-3">Save Settings</button>
+                </form>
+            </div>
+            
+            <!-- Dataset and Reports Management -->
+            <div class="glass-card p-5">
+                <h3 class="text-white fw-bold mb-4">Workspace Management</h3>
+                
+                <h5 class="text-white mb-3"><i class="fas fa-file-csv text-info me-2"></i> Your Uploaded Datasets</h5>
+                {% if datasets %}
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover border-secondary">
+                            <thead>
+                                <tr>
+                                    <th>Dataset</th>
+                                    <th>Rows</th>
+                                    <th>Size</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for d in datasets %}
+                                    <tr>
+                                        <td>{{ d.original_name }}</td>
+                                        <td>{{ d.row_count }}</td>
+                                        <td>{{ d.file_size|filesizeformat }}</td>
+                                        <td>
+                                            <a href="{{ url_for('dashboard_detail', dataset_id=d.id) }}" class="btn btn-sm btn-glass-secondary text-info"><i class="fas fa-eye"></i> View</a>
+                                            <form action="{{ url_for('delete_dataset_route', dataset_id=d.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this dataset? This will remove all associated reports.');">
+                                                <button type="submit" class="btn btn-sm btn-glass-secondary text-danger"><i class="fas fa-trash"></i> Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-secondary">No datasets uploaded yet. <a href="{{ url_for('upload_page') }}" class="text-info">Upload your first dataset!</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

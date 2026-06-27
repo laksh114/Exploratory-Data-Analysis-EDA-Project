@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard – {{ dataset.original_name }} – InsightX{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <!-- Sidebar Navigation -->
+    <div class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-chart-bar me-2"></i>
+            <span>InsightX Workspace</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item active">
+                <a href="{{ url_for('dashboard_detail', dataset_id=dataset.id) }}" class="sidebar-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Overview Cockpit</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('cleaning_page', dataset_id=dataset.id) }}" class="sidebar-link">
+                    <i class="fas fa-broom"></i>
+                    <span>Data Cleaning</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('charts_page', dataset_id=dataset.id) }}" class="sidebar-link">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Visualizations</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('reports_page', dataset_id=dataset.id) }}" class="sidebar-link">
+                    <i class="fas fa-file-invoice"></i>
+                    <span>Insights & Reports</span>
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="{{ url_for('upload_page') }}" class="btn btn-sm btn-premium w-100"><i class="fas fa-exchange-alt me-1"></i> Switch Dataset</a>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Content Panel -->
+    <div class="dashboard-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="text-white fw-bold mb-1">{{ dataset.original_name }}</h1>
+                <p class="text-secondary mb-0">Overview metrics, structural distributions, and AI queries</p>
+            </div>
+            
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('reports_page', dataset_id=dataset.id) }}" class="btn btn-premium"><i class="fas fa-file-export me-1"></i> Generate Report</a>
+            </div>
+        </div>
+
+        <!-- Metrics KPI Grid -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-info">
+                    <h3>{{ dataset.row_count }}</h3>
+                    <p>Total Rows</p>
+                </div>
+                <div class="metric-icon"><i class="fas fa-arrows-alt-v"></i></div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-info">
+                    <h3>{{ dataset.col_count }}</h3>
+                    <p>Total Columns</p>
+                </div>
+                <div class="metric-icon"><i class="fas fa-columns"></i></div>
+            </div>
+            
+            <div class="metric-card {% if summary_metrics.missing_cells > 0 %}danger{% endif %}">
+                <div class="metric-info">
+                    <h3>{{ summary_metrics.missing_cells }}</h3>
+                    <p>Missing Cells</p>
+                </div>
+                <div class="metric-icon"><i class="fas fa-ban"></i></div>
+            </div>
+            
+            <div class="metric-card {% if summary_metrics.duplicate_rows > 0 %}danger{% endif %}">
+                <div class="metric-info">
+                    <h3>{{ summary_metrics.duplicate_rows }}</h3>
+                    <p>Duplicate Rows</p>
+                </div>
+                <div class="metric-icon"><i class="fas fa-copy"></i></div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-info">
+                    <h3>{{ dataset.file_size|filesizeformat }}</h3>
+                    <p>Memory Size</p>
+                </div>
+                <div class="metric-icon"><i class="fas fa-hdd"></i></div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left Side: Summary table -->
+            <div class="col-lg-8">
+                <div class="glass-card mb-4">
+                    <h4 class="text-white fw-bold mb-3"><i class="fas fa-table text-info me-2"></i> Column Metadata & Types</h4>
+                    
+                    <div class="table-responsive-custom">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Column Name</th>
+                                    <th>Data Type</th>
+                                    <th>Null Count</th>
+                                    <th>Null %</th>
+                                    <th>Unique Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for col in columns_info %}
+                                    <tr>
+                                        <td class="text-white fw-semibold">{{ col.name }}</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if col.type == 'numeric' %}bg-primary
+                                                {% elif col.type == 'categorical' %}bg-success
+                                                {% elif col.type == 'boolean' %}bg-warning
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ col.type }}
+                                            </span>
+                                        </td>
+                                        <td>{{ col.null_count }}</td>
+                                        <td>{{ col.null_percentage|round(2) }}%</td>
+                                        <td>{{ col.unique_count }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Quick Plot Section -->
+                <div class="glass-card">
+                    <h4 class="text-white fw-bold mb-3"><i class="fas fa-chart-area text-info me-2"></i> Missing Values Map</h4>
+                    <div class="chart-container-wrapper" id="missingness-chart" style="height: 380px;"></div>
+                </div>
+            </div>
+
+            <!-- Right Side: NLQ Chat Widget -->
+            <div class="col-lg-4">
+                <div class="nlq-container h-100">
+                    <div class="nlq-header">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-robot text-info fs-4 me-2"></i>
+                            <div>
+                                <h6 class="text-white mb-0">InsightX NLQ AI</h6>
+                                <small class="text-muted">Ask questions about your data</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="nlq-body" id="nlq-chat-body">
+                        <div class="chat-bubble bot">
+                            Hi! I'm your data assistant. Ask me questions like:
+                            <ul class="mb-0 ps-3 mt-1 small text-white-50">
+                                <li><i>"What is the average of [column]?"</i></li>
+                                <li><i>"How many rows are there?"</i></li>
+                                <li><i>"Show column correlations"</i></li>
+                                <li><i>"How many null values in Age?"</i></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="nlq-input-group">
+                        <input type="text" class="form-control glass-input" id="nlq-chat-input" placeholder="Type a query...">
+                        <button class="btn btn-premium px-3" id="nlq-chat-send"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+    // Start dashboard controllers
+    document.addEventListener('DOMContentLoaded', () => {
+        initDashboard({{ dataset.id }});
+        
+        // Plot missing values heatmap using Plotly
+        const missingJson = `{{ missing_map_json|safe }}`;
+        renderPlotlyChart('missingness-chart', missingJson);
+    });
+</script>
+{% endblock %}

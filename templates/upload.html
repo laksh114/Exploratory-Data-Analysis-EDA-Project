@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Dataset – InsightX EDA Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="glass-card p-5 mb-4 text-center">
+                <i class="fas fa-cloud-upload-alt text-info display-2 mb-3"></i>
+                <h2 class="text-white fw-bold">Upload Your Dataset</h2>
+                <p class="text-secondary">Drag and drop your files here, or click to browse</p>
+                
+                <!-- File Upload Drag/Drop Box -->
+                <form id="upload-form" action="{{ url_for('upload_dataset_route') }}" method="POST" enctype="multipart/form-data" class="mt-4">
+                    <div id="drop-zone" class="p-5 border border-secondary border-dashed rounded-3 bg-dark-subtle cursor-pointer transition" style="cursor: pointer; border-style: dashed !important; border-width: 2px !important;">
+                        <input type="file" id="file-input" name="file" class="d-none" accept=".csv, .xlsx, .xls">
+                        <i class="fas fa-file-excel text-success fs-1 mb-2"></i>
+                        <p class="text-white mb-1" id="file-info-text">Choose a file or drag it here</p>
+                        <span class="text-secondary small">CSV or Excel (Max 16MB)</span>
+                    </div>
+                    
+                    <!-- Progress Bar (hidden by default) -->
+                    <div class="progress d-none mt-3" id="upload-progress-bar" style="height: 8px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-premium w-100 py-3 mt-4" id="upload-submit-btn" disabled>
+                        <i class="fas fa-upload me-2"></i> Upload and Analyze
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Sample Datasets Cockpit -->
+            <div class="glass-card p-5">
+                <h3 class="text-white fw-bold mb-4 text-center"><i class="fas fa-database text-info me-2"></i> Start with Sample Datasets</h3>
+                <p class="text-secondary text-center mb-4">Click any sample dataset below to load it into your workspace immediately.</p>
+                
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="p-4 rounded bg-dark border border-secondary text-center h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <i class="fas fa-ship text-primary fs-3 mb-2"></i>
+                                <h5 class="text-white fw-bold mb-1">Titanic Survival</h5>
+                                <p class="text-secondary small">Classic ML benchmark. Contains age, sex, class, passenger fares, and survival status.</p>
+                            </div>
+                            <form action="{{ url_for('load_sample_dataset', sample_name='titanic.csv') }}" method="POST">
+                                <button type="submit" class="btn btn-sm btn-glass-secondary w-100"><i class="fas fa-play me-1"></i> Load Demo</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="p-4 rounded bg-dark border border-secondary text-center h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <i class="fas fa-users text-danger fs-3 mb-2"></i>
+                                <h5 class="text-white fw-bold mb-1">Customer Churn</h5>
+                                <p class="text-secondary small">Telecom dataset. Telecom client behaviors, monthly fees, contract categories, and churn logs.</p>
+                            </div>
+                            <form action="{{ url_for('load_sample_dataset', sample_name='customer_churn.csv') }}" method="POST">
+                                <button type="submit" class="btn btn-sm btn-glass-secondary w-100"><i class="fas fa-play me-1"></i> Load Demo</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="p-4 rounded bg-dark border border-secondary text-center h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <i class="fas fa-graduation-cap text-success fs-3 mb-2"></i>
+                                <h5 class="text-white fw-bold mb-1">Student Scores</h5>
+                                <p class="text-secondary small">Academic performance factors: lunch, parental grades, test scores in math and reading.</p>
+                            </div>
+                            <form action="{{ url_for('load_sample_dataset', sample_name='student_performance.csv') }}" method="POST">
+                                <button type="submit" class="btn btn-sm btn-glass-secondary w-100"><i class="fas fa-play me-1"></i> Load Demo</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const submitBtn = document.getElementById('upload-submit-btn');
+    const fileInfoText = document.getElementById('file-info-text');
+    const uploadForm = document.getElementById('upload-form');
+    const progressBar = document.getElementById('upload-progress-bar');
+    const progressBarInner = progressBar.querySelector('.progress-bar');
+
+    // Trigger click on input
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    // File selected
+    fileInput.addEventListener('change', (e) => {
+        handleFileSelect(e.target.files[0]);
+    });
+
+    // Drag over
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'var(--primary)';
+        dropZone.style.background = 'rgba(99, 102, 241, 0.05)';
+    });
+
+    // Drag leave
+    ['dragleave', 'dragend'].forEach(type => {
+        dropZone.addEventListener(type, () => {
+            dropZone.style.borderColor = 'var(--border-color)';
+            dropZone.style.background = 'transparent';
+        });
+    });
+
+    // Drop file
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'var(--border-color)';
+        dropZone.style.background = 'transparent';
+        
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            handleFileSelect(e.dataTransfer.files[0]);
+        }
+    });
+
+    function handleFileSelect(file) {
+        if (!file) return;
+        
+        // Validation check
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (['csv', 'xlsx', 'xls'].indexOf(ext) === -1) {
+            showToast("Invalid file type. Please upload a CSV or Excel spreadsheet.", "danger");
+            submitBtn.disabled = true;
+            fileInfoText.innerText = "Choose a file or drag it here";
+            return;
+        }
+        
+        if (file.size > 16 * 1024 * 1024) {
+            showToast("File size too large (max 16MB).", "danger");
+            submitBtn.disabled = true;
+            fileInfoText.innerText = "Choose a file or drag it here";
+            return;
+        }
+        
+        fileInfoText.innerHTML = `<strong>Selected file:</strong> ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+        submitBtn.disabled = false;
+    }
+
+    // Ajax upload with progress bar
+    uploadForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const file = fileInput.files[0];
+        if (!file) return;
+        
+        submitBtn.disabled = true;
+        progressBar.classList.remove('d-none');
+        
+        const formData = new FormData(uploadForm);
+        const xhr = new XMLHttpRequest();
+        
+        xhr.upload.addEventListener('progress', (e) => {
+            if (e.lengthComputable) {
+                const pct = Math.round((e.loaded / e.total) * 100);
+                progressBarInner.style.width = pct + '%';
+            }
+        });
+        
+        xhr.addEventListener('load', () => {
+            if (xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        showToast("Dataset uploaded and processed successfully!", "success");
+                        setTimeout(() => {
+                            window.location.href = `/dashboard/dataset/${response.dataset_id}`;
+                        }, 1000);
+                    } else {
+                        showToast(response.error || "Failed to process dataset.", "danger");
+                        submitBtn.disabled = false;
+                        progressBar.classList.add('d-none');
+                    }
+                } catch (e) {
+                    showToast("Error processing server response.", "danger");
+                    submitBtn.disabled = false;
+                    progressBar.classList.add('d-none');
+                }
+            } else {
+                showToast("Server upload failed.", "danger");
+                submitBtn.disabled = false;
+                progressBar.classList.add('d-none');
+            }
+        });
+        
+        xhr.open('POST', uploadForm.action);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.send(formData);
+    });
+</script>
+{% endblock %}
