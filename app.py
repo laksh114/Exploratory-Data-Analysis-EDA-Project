@@ -311,7 +311,7 @@ def dashboard_home():
 @app.route('/dashboard/dataset/<int:dataset_id>')
 @login_required
 def dashboard_detail(dataset_id):
-    dataset = Dataset.query.get_or_400(dataset_id)
+    dataset = Dataset.query.get_or_404(dataset_id)
     
     # Security: user ownership check
     if dataset.user_id != current_user.id:
@@ -356,7 +356,7 @@ def dashboard_detail(dataset_id):
 @app.route('/dashboard/dataset/<int:dataset_id>/clean')
 @login_required
 def cleaning_page(dataset_id):
-    dataset = Dataset.query.get_or_400(dataset_id)
+    dataset = Dataset.query.get_or_404(dataset_id)
     if dataset.user_id != current_user.id:
         flash("Access Denied.", "error")
         return redirect(url_for('index'))
@@ -422,7 +422,7 @@ def clean_impute():
     strategy = data.get('strategy')
     fill_value = data.get('fill_value')
     
-    dataset = Dataset.query.get_or_400(dataset_id)
+    dataset = Dataset.query.get_or_404(dataset_id)
     if dataset.user_id != current_user.id:
         return jsonify({'success': False, 'error': 'Unauthorized'}), 403
         
@@ -444,7 +444,7 @@ def clean_duplicates():
     data = request.json
     dataset_id = data.get('dataset_id')
     
-    dataset = Dataset.query.get_or_400(dataset_id)
+    dataset = Dataset.query.get_or_404(dataset_id)
     if dataset.user_id != current_user.id:
         return jsonify({'success': False, 'error': 'Unauthorized'}), 403
         
@@ -467,7 +467,7 @@ def clean_outliers():
     column = data.get('column')
     strategy = data.get('strategy')
     
-    dataset = Dataset.query.get_or_400(dataset_id)
+    dataset = Dataset.query.get_or_404(dataset_id)
     if dataset.user_id != current_user.id:
         return jsonify({'success': False, 'error': 'Unauthorized'}), 403
         
@@ -490,7 +490,7 @@ def clean_convert_type():
     column = data.get('column')
     target_type = data.get('target_type')
     
-    dataset = Dataset.query.get_or_400(dataset_id)
+    dataset = Dataset.query.get_or_404(dataset_id)
     if dataset.user_id != current_user.id:
         return jsonify({'success': False, 'error': 'Unauthorized'}), 403
         
@@ -533,7 +533,7 @@ def recalculate_dataset_meta(dataset, df):
 @app.route('/dashboard/dataset/<int:dataset_id>/charts')
 @login_required
 def charts_page(dataset_id):
-    dataset = Dataset.query.get_or_400(dataset_id)
+    dataset = Dataset.query.get_or_404(dataset_id)
     if dataset.user_id != current_user.id:
         flash("Access Denied.", "error")
         return redirect(url_for('index'))
@@ -604,7 +604,7 @@ def charts_render_json():
     y = data.get('y')
     color = data.get('color')
     
-    dataset = Dataset.query.get_or_400(dataset_id)
+    dataset = Dataset.query.get_or_404(dataset_id)
     if dataset.user_id != current_user.id:
         return jsonify({'success': False, 'error': 'Unauthorized'}), 403
         
@@ -646,7 +646,7 @@ def charts_render_json():
 @app.route('/dashboard/dataset/<int:dataset_id>/report')
 @login_required
 def reports_page(dataset_id):
-    dataset = Dataset.query.get_or_400(dataset_id)
+    dataset = Dataset.query.get_or_404(dataset_id)
     if dataset.user_id != current_user.id:
         flash("Access Denied.", "error")
         return redirect(url_for('index'))
@@ -671,7 +671,7 @@ def reports_page(dataset_id):
 @app.route('/export/dataset/<int:dataset_id>')
 @login_required
 def export_dataset(dataset_id):
-    dataset = Dataset.query.get_or_400(dataset_id)
+    dataset = Dataset.query.get_or_404(dataset_id)
     if dataset.user_id != current_user.id:
         flash("Access Denied.", "error")
         return redirect(url_for('index'))
@@ -690,7 +690,7 @@ def export_dataset(dataset_id):
 @app.route('/export/report/<int:dataset_id>/<string:report_type>')
 @login_required
 def export_report(dataset_id, report_type):
-    dataset = Dataset.query.get_or_400(dataset_id)
+    dataset = Dataset.query.get_or_404(dataset_id)
     if dataset.user_id != current_user.id:
         flash("Access Denied.", "error")
         return redirect(url_for('index'))
@@ -755,7 +755,7 @@ def run_nlq_query():
     dataset_id = data.get('dataset_id')
     query = data.get('query')
     
-    dataset = Dataset.query.get_or_400(dataset_id)
+    dataset = Dataset.query.get_or_404(dataset_id)
     if dataset.user_id != current_user.id:
         return jsonify({'success': False, 'answer': 'Unauthorized'}), 403
         
@@ -776,7 +776,7 @@ def run_nlq_query():
 @app.route('/delete-dataset/<int:dataset_id>', methods=['POST'])
 @login_required
 def delete_dataset_route(dataset_id):
-    dataset = Dataset.query.get_or_400(dataset_id)
+    dataset = Dataset.query.get_or_404(dataset_id)
     if dataset.user_id != current_user.id:
         flash("Unauthorized deletion attempt.", "error")
         return redirect(url_for('index'))
